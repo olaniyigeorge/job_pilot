@@ -1,0 +1,39 @@
+// use prisma-next
+
+enum ExpertiseLevel {
+  @@type("pg/text@1")
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+model UserProfile {
+  id                Int      @id @default(autoincrement())
+  firstName         String
+  lastName          String
+  headline          String?
+  summary           String?
+  yearsOfExperience Int?
+  createdAt         TimestamptzString @default(now())
+  updatedAt         temporal.updatedAtString()
+}
+
+model Skill {
+  id        Int            @id @default(autoincrement())
+  name      String         @unique
+  expertise ExpertiseLevel
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model JobPreference {
+  id                Int      @id @default(autoincrement())
+  targetRoles       String[]
+  locations         String[]
+  employmentTypes   String[]
+  minimumMatchScore Int      @default(50)
+  excludedKeywords  String[]
+  createdAt         TimestamptzString @default(now())
+  updatedAt         temporal.updatedAtString()
+}
