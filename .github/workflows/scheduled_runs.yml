@@ -1,4 +1,4 @@
-name: Test Cron
+name: Job Fetching and Parsing Cron
 
 on:
   schedule:
