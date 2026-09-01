@@ -1,0 +1,46 @@
+{
+  "name": "job_pilot",
+  "version": "1.0.0",
+  "description": "The Job Automation System aims to reduce the repetitive work by creating a centralized automation layer for job discovery and application workflows.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "postinstall": "prisma skills sync || exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olaniyigeorge/job_pilot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olaniyigeorge/job_pilot/issues"
+  },
+  "homepage": "https://github.com/olaniyigeorge/job_pilot#readme",
+  "dependencies": {
+    "@prisma/client": "^7.10.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "morgan": "^1.12.0",
+    "prisma": "^8.0.0-rc.12",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^26.4.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "nodemon": "^3.1.14",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}
