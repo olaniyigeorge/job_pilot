@@ -1,0 +1,178 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.jobPreference",
+    "label": "Create table \"jobPreference\"",
+    "summary": "Creates table \"jobPreference\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "jobPreference"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"jobPreference\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"jobPreference\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"jobPreference\"",
+        "sql": "CREATE TABLE \"public\".\"jobPreference\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"employmentTypes\" text[] NOT NULL,\n  \"excludedKeywords\" text[] NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"locations\" text[] NOT NULL,\n  \"minimumMatchScore\" int4 DEFAULT 50 NOT NULL,\n  \"targetRoles\" text[] NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"jobPreference_employmentTypes_elem_not_null_15e27405\" CHECK (array_position(\"employmentTypes\", NULL) IS NULL),\n  CONSTRAINT \"jobPreference_excludedKeywords_elem_not_null_4947c98d\" CHECK (array_position(\"excludedKeywords\", NULL) IS NULL),\n  CONSTRAINT \"jobPreference_locations_elem_not_null_35aec250\" CHECK (array_position(\"locations\", NULL) IS NULL),\n  CONSTRAINT \"jobPreference_targetRoles_elem_not_null_e2f5bf9a\" CHECK (array_position(\"targetRoles\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"jobPreference\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"jobPreference\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.skill",
+    "label": "Create table \"skill\"",
+    "summary": "Creates table \"skill\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "skill"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"skill\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"skill\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"skill\"",
+        "sql": "CREATE TABLE \"public\".\"skill\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"expertise\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"skill_expertise_check_5ed1c8aa\" CHECK (\"expertise\" IN ('BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"skill\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"skill\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.userProfile",
+    "label": "Create table \"userProfile\"",
+    "summary": "Creates table \"userProfile\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "userProfile"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"userProfile\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"userProfile\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"userProfile\"",
+        "sql": "CREATE TABLE \"public\".\"userProfile\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"firstName\" text NOT NULL,\n  \"headline\" text,\n  \"id\" SERIAL NOT NULL,\n  \"lastName\" text NOT NULL,\n  \"summary\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"yearsOfExperience\" int4,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"userProfile\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"userProfile\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.skill.skill_name_key",
+    "label": "Add unique constraint on \"skill\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "skill_name_key",
+        "table": "skill"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"skill_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "skill_name_key",
+          "public",
+          "\"public\".\"skill\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"skill_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"skill\" ADD CONSTRAINT \"skill_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"skill_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "skill_name_key",
+          "public",
+          "\"public\".\"skill\""
+        ]
+      }
+    ]
+  }
+]
