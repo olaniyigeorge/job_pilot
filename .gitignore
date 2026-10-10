@@ -142,3 +142,27 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 dist/
+
+# --- JobPilot ---
+
+# Claude Code per-user project settings (personal allowlists, not shared)
+.claude/settings.local.json
+
+# Secrets: .env is already covered above; this is the only tracked env file
+!.env.example
+
+# Playwright session state is a credential, per PRODUCTION_PLAN §3
+storageState*.json
+**/storageState*.json
+.playwright/
+
+# Browser test output
+playwright-report/
+test-results/
+playwright/.cache/
+
+# Run artifacts: generated CVs, cover letters, screenshots
+artifacts/
+output/
+*.docx
+*.pdf
