@@ -1,0 +1,30 @@
+export {
+  ConfigError,
+  configDir,
+  DEFAULT_CONFIG_DIR,
+  enabledBoards,
+  loadConfig,
+  type Config,
+} from "./load-config";
+
+export {
+  boardSchema,
+  boardTypeSchema,
+  googleSheetSchema,
+  jobBoardsSchema,
+  locationPreferencesSchema,
+  profileSchema,
+  salarySchema,
+  scannerSchema,
+  tierPreferencesSchema,
+  trackerColumnSchema,
+  type Board,
+  type BoardType,
+  type JobBoards,
+  type LocationPreferences,
+  type Profile,
+  type Salary,
+  type ScanConfig,
+  type TierPreferences,
+  type TrackerColumn,
+} from "./schema";

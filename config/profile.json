@@ -1,0 +1,86 @@
+{
+  "name": "Abeleje Olaniyi George",
+  "email": "olaniyi@olaniyigeorge.com",
+  "website": "olaniyigeorge.com",
+  "linkedin": "https://linkedin.com/in/abeleje-olaniyi",
+  "location": "Lagos, Nigeria",
+  "open_to": ["Remote", "Relocation"],
+  "target_role": "Full-Stack Software Engineer",
+  "role_alt_titles": [
+    "Software Engineer",
+    "Full Stack Engineer",
+    "Backend Engineer",
+    "Frontend Engineer",
+    "Senior Software Engineer",
+    "Staff Software Engineer",
+    "Principal Engineer",
+    "AI Engineer",
+    "Real-Time Systems Engineer"
+  ],
+  "experience_years": 5,
+  "seniority": "Mid-intermediate",
+  "tech_stack": {
+    "languages": ["Python", "TypeScript", "JavaScript", "Node.js"],
+    "frontend": ["React", "Next.js", "HTML", "CSS", "Tailwind CSS"],
+    "backend": ["FastAPI", "Django", "Django REST Framework", "Express", "REST APIs", "Webhooks", "Microservices", "Async Processing"],
+    "real_time_ai": ["WebRTC", "aiortc", "Gemini Live API", "LLM Tool-Calling", "Agent State Machines", "RAG Pipelines", "Speech/Audio Pipelines"],
+    "databases": ["PostgreSQL", "MySQL", "SQLite", "MongoDB"],
+    "cloud_devops": ["AWS", "EC2", "S3", "RDS", "SES", "Docker", "Containerization", "CI/CD", "Render", "Vercel"],
+    "practices": ["System Design", "Architecture", "Load Testing", "Performance Testing", "API Documentation", "Code Review", "Git Workflows", "Open Source"]
+  },
+  "preferred_frameworks": ["FastAPI", "React", "Next.js", "Django", "WebRTC"],
+  "industries_of_interest": ["AI/ML", "Fintech", "EdTech", "HealthTech", "Real-Time Systems", "Voice AI", "SaaS", "Startups"],
+  "salary": {
+    "min_usd": 36000,
+    "target_usd": 72000,
+    "max_usd": 120000,
+    "currency": "USD",
+    "note": "Open to equity-heavy startup comp; remote US, CANADA, EU, roles preferred"
+  },
+  "tier_preferences": {
+    "startup": true,
+    "series_a": true,
+    "series_b_plus": true,
+    "big_tech": false,
+    "remote_first": true,
+    "hybrid": true,
+    "on_site": true
+  },
+  "location_preferences": {
+    "remote": true,
+    "timezones": ["UTC+0", "UTC-8", "UTC-5"],
+    "countries": ["United States", "Canada", "EU", "Nigeria", "Remote (global)"],
+    "relocation": "Open to global relocation"
+  },
+  "exclusion_keywords": [
+    "trainee",
+    "crm",
+    "sales",
+    "marketing",
+    "non-technical"
+  ],
+  "must_have_skills": [
+    "Python",
+    "FastAPI",
+    "React",
+    "TypeScript",
+    "PostgreSQL"
+  ],
+  "nice_to_have_skills": [
+    "WebRTC",
+    "AI",
+    "LLM",
+    "RAG",
+    "AWS",
+    "Docker",
+    "Next.js",
+    "Redis",
+    "Real-time",
+    "Speech",
+    "Audio",
+    "Voice"
+  ],
+  "cv_base_path": "C:/Users/HomePC/Documents/Career/base/base_cv.pdf",
+  "cv_versions_dir": "C:/Users/HomePC/Documents/Career/versions",
+  "cv_tailored_dir": "C:/Users/HomePC/Documents/Career/versions"
+}

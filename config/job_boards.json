@@ -1,0 +1,151 @@
+{
+  "scanner": {
+    "schedule": "0 8 * * *",
+    "timezone": "Africa/Lagos",
+    "deduplication_hours": 24,
+    "max_jobs_per_board_per_run": 50,
+    "max_total_new_jobs_per_run": 100
+  },
+  "boards": [
+    {
+      "name": "Wellfound (AngelList)",
+      "url": "https://wellfound.com",
+      "type": "api",
+      "enabled": true,
+      "query_params": {
+        "role": "Full-Stack Software Engineer",
+        "skill": ["Python", "React", "TypeScript"],
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      "notes": "Has a public API; best coverage for startup jobs. Requires API token."
+    },
+    {
+      "name": "RemoteOK",
+      "url": "https://remoteok.com",
+      "type": "browser",
+      "enabled": true,
+      "query_params": {
+        "category": "programming"
+      },
+      "notes": "No public RSS feed. Use browser automation to scrape remote job listings from remoteok.com/remote-jobs. Fragile but workable."
+    },
+    {
+      "name": "RemoteOK (AI/ML)",
+      "url": "https://remoteok.com",
+      "type": "browser",
+      "enabled": true,
+      "query_params": {
+        "category": "ai"
+      },
+      "notes": "Same as RemoteOK above — browser-based. Filter for AI-tagged posts."
+    },
+    {
+      "name": "Ashby",
+      "url": "https://ashbyhq.com",
+      "type": "api",
+      "enabled": true,
+      "query_params": {
+        "role": "Software Engineer",
+        "location": "Remote"
+      },
+      "notes": "Ashby has a public jobs API for companies using their ATS. Requires per-company discovery or aggregate search."
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/jobs",
+      "type": "email_monitor",
+      "enabled": true,
+      "query_params": {
+        "keywords": "Full-Stack Software Engineer Python React",
+        "location": "Remote",
+        "remote": true
+      },
+      "email_filter": "from:linkedin.com subject:(job OR hiring OR opportunity OR 'career opportunity')",
+      "notes": "Instead of scraping, monitor LinkedIn job alert emails. Requires Gmail access to search inbox for LinkedIn job alerts."
+    },
+    {
+      "name": "Indeed",
+      "url": "https://indeed.com",
+      "type": "browser",
+      "enabled": false,
+      "query_params": {
+        "keywords": "Full-Stack Software Engineer",
+        "location": "Remote",
+        "fromage": "1"
+      },
+      "notes": "Indeed aggressively blocks scraping. Browser automation possible but rate-limited. Disabled by default."
+    },
+    {
+      "name": "Glassdoor",
+      "url": "https://glassdoor.com",
+      "type": "browser",
+      "enabled": false,
+      "query_params": {
+        "keywords": "Software Engineer",
+        "location": "Remote"
+      },
+      "notes": "Glassdoor blocks scraping. Browser automation possible. Disabled by default."
+    },
+    {
+      "name": "We Work Remotely (WWR)",
+      "url": "https://weworkremotely.com",
+      "type": "rss",
+      "enabled": true,
+      "rss_feed": "https://weworkremotely.com/remote-jobs.rss",
+      "query_params": {
+        "category": "programmer-programming"
+      },
+      "notes": "RSS feed available. Filter for programmer/programming category."
+    },
+    {
+      "name": "HackerNews Who's Hiring",
+      "url": "https://news.ycombinator.com",
+      "type": "browser",
+      "enabled": true,
+      "query_params": {},
+      "notes": "HN Who's Hiring monthly thread (first weekday of each month). Use browser automation to parse the thread. Only has jobs on the 1st of each month."
+    },
+    {
+      "name": "Y Combinator Jobs",
+      "url": "https://jobs.ycombinator.com",
+      "type": "api",
+      "enabled": true,
+      "query_params": {
+        "role": "Software Engineer",
+        "location": "Remote"
+      },
+      "notes": "YC has a public jobs board with API access."
+    }
+  ],
+  "google_sheet": {
+    "spreadsheet_id": "1n9GIu_pYAMKFHh9_QVaLkaZnzMjrkf7ufLhUkg-mXZg",
+    "sheet_name": "Sheet1",
+    "sheet_gid": 1344067524,
+    "header_row": 1,
+    "data_start_row": 2,
+    "columns": [
+      { "index": 0, "key": "job_id", "label": "#" },
+      { "index": 1, "key": "company", "label": "Company" },
+      { "index": 2, "key": "role_title", "label": "Role Title" },
+      { "index": 3, "key": "tier", "label": "Tier" },
+      { "index": 4, "key": "location_tz", "label": "Location / TZ" },
+      { "index": 5, "key": "salary_usd", "label": "Salary (USD)" },
+      { "index": 6, "key": "job_url", "label": "Job URL" },
+      { "index": 7, "key": "company_website", "label": "Company Website" },
+      { "index": 8, "key": "date_found", "label": "Date Found" },
+      { "index": 9, "key": "date_applied", "label": "Date Applied" },
+      { "index": 10, "key": "status", "label": "Status" },
+      { "index": 11, "key": "cv_version", "label": "CV Version" },
+      { "index": 12, "key": "cover_note_sent", "label": "Cover Note Sent" },
+      { "index": 13, "key": "gap_analysis_done", "label": "Gap Analysis Done" },
+      { "index": 14, "key": "projects_tailored", "label": "Projects Tailored" },
+      { "index": 15, "key": "follow_up_date", "label": "Follow-up Date" },
+      { "index": 16, "key": "interview_stage", "label": "Interview Stage" },
+      { "index": 17, "key": "outcome", "label": "Outcome" },
+      { "index": 18, "key": "excitement", "label": "Excitement (1–5)" },
+      { "index": 19, "key": "fit_score", "label": "Fit Score (1–5)" },
+      { "index": 20, "key": "notes", "label": "Notes" }
+    ]
+  }
+}
