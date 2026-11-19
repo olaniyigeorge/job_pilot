@@ -31,7 +31,7 @@
   "preferred_frameworks": ["FastAPI", "React", "Next.js", "Django", "WebRTC"],
   "industries_of_interest": ["AI/ML", "Fintech", "EdTech", "HealthTech", "Real-Time Systems", "Voice AI", "SaaS", "Startups"],
   "salary": {
-    "min_usd": 36000,
+    "min_usd": 24000,
     "target_usd": 72000,
     "max_usd": 120000,
     "currency": "USD",
