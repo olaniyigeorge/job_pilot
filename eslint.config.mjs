@@ -10,6 +10,7 @@ export default tseslint.config(
       "playwright-report/**",
       "test-results/**",
       "src/prisma/contract.d.ts",
+      "migrations/snapshots/**",
     ],
   },
   ...tseslint.configs.recommended,
