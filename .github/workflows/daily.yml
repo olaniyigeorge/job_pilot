@@ -1,0 +1,51 @@
+name: Daily JobPilot discovery
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # 08:00 Africa/Lagos
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Fetch and score jobs without saving results
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: jobpilot-daily
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Require shared database
+        if: github.event_name == 'schedule' || inputs.dry_run == false
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: test -n "$DATABASE_URL"
+      - name: Run pipeline
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JOBPILOT_ENABLE_GMAIL: ${{ secrets.JOBPILOT_ENABLE_GMAIL }}
+          JOBPILOT_ENABLE_SHEETS: ${{ secrets.JOBPILOT_ENABLE_SHEETS }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SHEET_NAME: ${{ secrets.GOOGLE_SHEET_NAME }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
+            npm run pipeline -- --dry-run
+          else
+            npm run pipeline -- --live
+          fi
