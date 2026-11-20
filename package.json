@@ -1,9 +1,15 @@
 {
-  "name": "job_pilot",
+  "name": "jobpilot-career",
   "type": "module",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "The Job Automation System aims to reduce the repetitive work by creating a centralized automation layer for job discovery and application workflows.",
+  "bin": {
+    "jobpilot": "bin/jobpilot.js"
+  },
+  "files": ["bin/", "config/profile.json", "config/job_boards.json", "config/cv_base.example.json", "migrations/", "scripts/", "src/", "next.config.ts", "tsconfig.json", "README.md", "LICENSE"],
+  "engines": { "node": ">=22" },
+  "publishConfig": { "access": "public" },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,8 +24,11 @@
     "config:sync": "tsx scripts/sync-config.ts",
     "keep-alive": "tsx scripts/keep-alive.ts",
     "automation:discover": "tsx scripts/discover-jobs.ts",
-    "postinstall": "prisma skills sync || exit 0",
-    "contract:emit": "prisma contract emit"
+    "google:auth-url": "tsx scripts/google-oauth.ts url",
+    "google:exchange": "tsx scripts/google-oauth.ts exchange",
+    "playwright:install": "playwright install chromium",
+    "application:draft": "tsx scripts/draft-application.ts",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "repository": {
     "type": "git",
@@ -33,24 +42,27 @@
   },
   "homepage": "https://github.com/olaniyigeorge/job_pilot#readme",
   "dependencies": {
-    "@prisma/orm-postgres": "^8.0.0-rc.17",
+    "docx": "^9.16.0",
     "dotenv": "^17.4.2",
+    "googleapis": "^190.0.0",
     "next": "^16.4.0",
+    "pg": "^8.23.1",
     "pino": "^10.4.0",
+    "playwright": "^1.65.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "zod": "^4.6.5"
+    "rss-parser": "^3.13.0",
+    "zod": "^4.6.5",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
-    "@prisma/cli-engine": "^0.7.0",
     "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "eslint": "^10.12.0",
     "pino-pretty": "^13.2.0",
     "prettier": "^3.9.9",
-    "prisma": "^8.0.0-rc.22",
-    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.1",
     "vitest": "^5.0.3"
