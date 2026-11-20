@@ -166,3 +166,5 @@ artifacts/
 output/
 *.docx
 *.pdf
+data/
+config/cv_base.json
