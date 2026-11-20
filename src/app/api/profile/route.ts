@@ -10,6 +10,7 @@ import {
   profileUpdateSchema,
   updateProfile,
 } from "../../../services/profile";
+import { requireApiToken } from "../../../lib/api-auth";
 
 /**
  * Replaces the Express `profile.routes.ts` + `profile.controller.ts`.
@@ -32,7 +33,9 @@ function serviceError(error: unknown) {
   throw error;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const denied = requireApiToken(request);
+  if (denied) return denied;
   try {
     const profile = await getProfile();
     if (!profile) return NextResponse.json({ error: "Profile not set up yet" }, { status: 404 });
@@ -43,6 +46,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const denied = requireApiToken(request);
+  if (denied) return denied;
   const parsed = profileInputSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return validationError(parsed.error);
 
@@ -54,6 +59,8 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const denied = requireApiToken(request);
+  if (denied) return denied;
   const parsed = profileUpdateSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return validationError(parsed.error);
 
