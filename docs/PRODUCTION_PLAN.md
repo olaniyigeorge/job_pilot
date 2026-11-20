@@ -1,41 +1,48 @@
 # JobPilot: Build Plan (TypeScript edition)
 
-**Last updated:** 2026-10-09 · **Stack:** TypeScript end to end: Next.js (API proxy), Prisma, Playwright. No Python for now.
-**Status:** Phase 0 in progress — foundations landed; retiring the Express scaffold and CI verification are pending an `npm install` (dependency versions below need reconciling against the registry).
+**Last updated:** 2026-11-19 · **Stack:** TypeScript end to end: Next.js dashboard/API, PostgreSQL (`pg`), Playwright CLI, Google APIs.
+**Status:** Foundations and the first discovery/review/draft path are implemented. A real CV source, database URL, OAuth consent, deployment target, and a few company-specific board slugs still require configuration.
+
+## Implementation status (2026-11-19)
+
+- Implemented: protected dashboard/API, PostgreSQL storage with a local JSON fallback, RemoteOK public JSON, WWR RSS, Hacker News jobs, configurable Greenhouse/Lever/Ashby company APIs, skill scoring and exclusions, deduplication, run history, application tracking, Google OAuth helpers, Gmail read-only discovery, Sheets write-through, Telegram digests, a daily Actions schedule, fact-preserving CV tailoring, and browser form preparation that stops before submission.
+- User setup required: `DATABASE_URL`; Google OAuth client and refresh token; optional Telegram credentials; factual `config/cv_base.json`; company-specific board slugs; and a host for the dashboard.
+- Application submission remains manual. The CLI generates a tailored CV, cover letter, fills common contact fields, and captures a screenshot; it never clicks Submit.
+- Architecture changed from the proposed Prisma 8 prerelease contract to PostgreSQL through `pg`. The old client was unused and failed typechecking against its locked beta adapter. The old initialization migration is retained as historical data.
 
 JobPilot does the work (discover, match, gap-analyze, tailor CVs, draft applications, track outcomes, report status) on a schedule. The OS repo (`olaniyigeorge.os`) stays the source of truth: it pings JobPilot and pulls data, and JobPilot never writes into it. The Google Sheet is the human-facing tracker (writing to it is allowed).
 
 ## 1. What changed from the Python plan
 
-| Before | Now |
-|---|---|
-| Python + FastAPI status service | Next.js route handlers (`/api/*`) as the API |
-| `scanner.py` / `cv_formatter.py` ported to Python | Ported to TypeScript modules |
-| `python-docx` for CVs | `docx` npm package |
-| `feedparser` / `googleapiclient` | `rss-parser` / `googleapis` |
-| `keep_alive.py` | Keep it as a tiny standalone script for now, or replace with `scripts/keep-alive.ts`. The only Python left, and removable. |
-| pytest | Vitest (unit) + Playwright Test (fixture HTML) |
-| Postgres via `DATABASE_URL` | Same, accessed through Prisma (SQLite for local dry-run if the Prisma setup allows) |
+| Before                                            | Now                                                                                                                        |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Python + FastAPI status service                   | Next.js route handlers (`/api/*`) as the API                                                                               |
+| `scanner.py` / `cv_formatter.py` ported to Python | Ported to TypeScript modules                                                                                               |
+| `python-docx` for CVs                             | `docx` npm package                                                                                                         |
+| `feedparser` / `googleapiclient`                  | `rss-parser` / `googleapis`                                                                                                |
+| `keep_alive.py`                                   | Keep it as a tiny standalone script for now, or replace with `scripts/keep-alive.ts`. The only Python left, and removable. |
+| pytest                                            | Vitest (unit) + Playwright Test (fixture HTML)                                                                             |
+| Postgres via `DATABASE_URL`                       | Same, accessed through `pg`; local dry-runs can use the ignored JSON store                                                 |
 
 Retire the Express scaffold (`src/app.ts`, `src/server.ts`, `src/routes`, `src/controllers`). Next.js replaces it, and `profile.controller.ts` logic moves into a route handler or service.
 
 ## 2. Canonical context (read from the OS repo, not invented)
 
 - **Profile** (`career/profile.json`): target Full-Stack Software Engineer, plus Backend, AI and Real-Time Systems Engineer. About 5 years of experience. Pay $36k / $72k / $120k (min/target/max USD). Remote US/CA/EU preferred, open to global relocation.
-- **Must-have:** Python, FastAPI, React, TypeScript, PostgreSQL. This is a *scoring* list, not a build stack, so scoring keeps it as-is.
+- **Must-have:** Python, FastAPI, React, TypeScript, PostgreSQL. This is a _scoring_ list, not a build stack, so scoring keeps it as-is.
 - **Nice-to-have:** WebRTC, AI, LLM, RAG, AWS, Docker, Next.js, Redis, real-time/speech/audio/voice.
 - **Exclude:** trainee, crm, sales, marketing, non-technical.
 - **Boards** (`career/job_boards.json`): schedule `0 8 * * * Africa/Lagos`, dedup 24h, ≤50 per board, ≤100 per run.
   - Enabled: Wellfound (api), RemoteOK ×2 (browser), Ashby (api), WWR (rss), HN Who's Hiring (browser, monthly), YC Jobs (api), LinkedIn (email_monitor).
   - Disabled: Indeed, Glassdoor.
-- **Tracker** (Google Sheet, id/gid via secret): 21 columns: `job_id, company, role_title, tier, location_tz, salary_usd, job_url, company_website, date_found, date_applied, status, cv_version, cover_note_sent, gap_analysis_done, projects_tailored, follow_up_date, interview_stage, outcome, excitement, fit_score, notes`. The Prisma `Application` model and `/api/applications` mirror this schema.
-- **Google auth:** client secret stored, auth URL generated, code exchange pending. Gmail and Sheets are not usable yet. Never read `~/.secrets/olaniyigeorge-os/`.
+- **Tracker** (Google Sheet, id/gid via config): 21 columns: `job_id, company, role_title, tier, location_tz, salary_usd, job_url, company_website, date_found, date_applied, status, cv_version, cover_note_sent, gap_analysis_done, projects_tailored, follow_up_date, interview_stage, outcome, excitement, fit_score, notes`. PostgreSQL JSONB job records and `/api/applications` hold the application state; Sheets is optional write-through.
+- **Google auth:** `scripts/google-oauth.ts` generates consent URLs and exchanges authorization codes. Gmail and Sheets require Google Cloud OAuth credentials and a refresh token in environment variables. Never read `~/.secrets/olaniyigeorge-os/`.
 - **micro1:** referral-only, not a scanned board, never auto-apply. Two independent axes: platform certification (interview → certified → profile+ID complete; record ID type) vs client-project capacity (active/paused). Vendor answers stored verbatim. Mercor is a separate parallel track.
 
 ## 3. Hard constraints (non-negotiable)
 
 - **LinkedIn:** never scrape, log in or automate. Alerts only via Gmail (read-only).
-- **Submit gate:** automate up to submit, screenshot the filled form, stop, queue for approval. Default is dry-run/draft. A real submit needs explicit `allowSubmit` and a logged approval.
+- **Submit gate:** the current implementation stops before submission. It creates review materials and a screenshot; the user submits manually. There is no automated submit endpoint or approval record yet.
 - **Secrets:** never commit them, never read secret files for keys. CI uses GitHub encrypted secrets. Playwright `storageState` is a secret. **Verify `.env` is gitignored first**, since it appears in the tree.
 - **micro1:** discover/notify only.
 - **Timezone:** 08:00 WAT = `0 7 * * *` UTC.
@@ -62,7 +69,7 @@ src/
     notify/                  digest (Telegram/email)
   config/                    loaders + zod validation (profile, boards, env)
   services/                  pipeline orchestration, store access
-  prisma/                    contract, db client (existing)
+  automation/database.ts     shared PostgreSQL schema and connection pool
   ai/                        optional LLM assist
   sources/                   shared source types/normalizers
 scripts/
@@ -74,13 +81,13 @@ scripts/
 Key decisions:
 
 - **Next.js route handlers are the API.** They contain no business logic: they validate, call `services/`, and return JSON. The same services are called by the CLI scripts that GitHub Actions runs, so both entry points share one code path.
-- **Store:** Prisma on Postgres (shared by the ephemeral Actions run and the persistent Next.js host). Dedup lives here, not in the Sheet, which unblocks you from Google.
-- **Google (gated add-on):** `googleapis` client with an OAuth refresh token. Gmail monitor and Sheet write-through stay feature-flagged off until code exchange is done.
-- **Playwright runs only in the CLI/Actions path, never inside Next.js route handlers.** Serverless hosts can't run browsers reliably, and a long browser job shouldn't be tied to an HTTP request. The API just reads results from the DB.
+- **Store:** PostgreSQL through `pg` (shared by Actions and the persistent Next.js host); local runs can use ignored JSON files. Dedup lives in the store, not the Sheet.
+- **Google (gated add-on):** `googleapis` client with OAuth refresh token. Gmail job-alert and possible-reply monitoring plus Sheet synchronization are feature-flagged off until credentials and consent are configured.
+- **Playwright runs only in the CLI path, never inside Next.js route handlers.** Serverless hosts can't run browsers reliably, and a long browser job shouldn't be tied to an HTTP request. The API reads saved results from the DB.
 - **Config-driven, idempotent, dedup at every stage.** Use `zod` for config and env validation, `pino` for structured logging. Each run writes logs and artifacts (CVs, screenshots).
-- **Playwright:** `storageState` per site (encrypted, never committed), screenshot each step, resilient selectors, retry + timeout, headless in CI, headful locally.
+- **Playwright:** CLI-only. The generic draft helper fills common contact fields, attaches the tailored CV where possible, and never clicks Submit. Site-specific questions still need human review.
 
-Suggested dependencies: `next`, `@prisma/*` (existing prisma-next setup), `playwright`, `zod`, `pino`, `rss-parser`, `docx`, `googleapis`, `tsx`, `vitest`, `eslint`, `prettier`.
+Runtime dependencies include `next`, `pg`, `playwright`, `zod`, `pino`, `rss-parser`, `docx`, and `googleapis`.
 
 ## 5. OS integration (endpoints the OS pulls)
 
@@ -100,9 +107,10 @@ JSON, stable, versioned if the schema changes. Protect `/status` and `/applicati
 
 ## 7. Phased roadmap
 
-### Phase 0: Foundations
+### Phase 0: Foundations — implemented
 
 **Build:**
+
 - Next.js + TS strict, eslint/prettier, Vitest.
 - Module skeleton from §4.
 - Remove the Express scaffold.
@@ -120,23 +128,24 @@ JSON, stable, versioned if the schema changes. Protect `/status` and `/applicati
 
 **DoD:** CI green, no-op dry-run works, no secrets or artifacts tracked.
 
-### Phase 1: Discover + Match + Track + Status (first real value, no Google)
+### Phase 1: Discover + Match + Track + Status — implemented for configured sources
 
 **Build:**
-- Port `scanner.py`'s scoring, dedup and exclusion into `matching/`.
-- WWR RSS adapter live (`rss-parser`).
-- Prisma `Application` model (21 columns) as the primary sink, with store-level dedup.
-- Per-role gap analysis (mirror the `context.md` format).
-- `/api/status` and `/api/applications`.
-- Sheet write-through implemented but flag-gated.
+
+- Profile-based skill, title, location, and exclusion scoring; URL-based ID deduplication in PostgreSQL or the local store.
+- RemoteOK JSON, WWR RSS, Hacker News jobs, and configured Greenhouse/Lever/Ashby company-board APIs.
+- Per-role matched and missing skill analysis.
+- `/api/status` and `/api/applications`, protected with the API token.
+- Sheets write-through is implemented but flag-gated.
 
 **Tests:** unit tests for match, dedup, exclusion; fixture-based WWR parse; endpoint shape tests.
 
-**DoD:** a dry-run discovers real WWR roles, scores, gap-analyzes and dedupes them into the store, and `/api/applications` serves them in schema.
+**DoD:** met for enabled and configured sources; several disabled sources still need credentials or company slugs.
 
-### Phase 2: Tailor
+### Phase 2: Tailor — implemented; factual CV source required
 
 **Build:**
+
 - Port `cv_formatter.py` to `tailor/` using the `docx` package.
 - Tailored CV and optional cover letter per shortlisted role, saved as artifacts.
 - Resolve the base-CV gap (§8).
@@ -146,25 +155,27 @@ JSON, stable, versioned if the schema changes. Protect `/status` and `/applicati
 
 **DoD:** each shortlisted role yields a reviewable tailored CV and a fit analysis.
 
-### Phase 3: Draft application + approval gate (Playwright)
+### Phase 3: Draft application + human review (Playwright) — generic path implemented
 
 **Build:**
-- ATS adapters (Greenhouse, Lever, Ashby, Workable): autofill to the submit step, attach CV, screenshot, queue as awaiting-approval.
+
+- Generic public job-page form filling: fills common contact fields, attaches the tailored CV when an upload field is available, and saves a screenshot and missing-fields report.
 - `storageState` per site.
-- Submit gate (`allowSubmit` + logged approval via `/api/approvals`).
+- No automated submit; the applicant reviews and submits manually.
 - Browser discovery boards (RemoteOK, HN Who's Hiring).
 
 **Tests:** Playwright against fixture HTML; a dry-run must pass before any live run.
 
-**DoD:** from a shortlisted role, a filled form and screenshot are produced and queued; no submit without the flag and a logged approval.
+**DoD:** basic form draft and screenshot path are available. Site-specific questions, authenticated ATS sessions, and automated approval logging are not implemented.
 
-### Phase 4: Orchestrate, deploy, monitor, notify
+### Phase 4: Orchestrate, deploy, monitor, notify — schedule and integration code implemented; account setup remains
 
 **Build:**
+
 - Daily Actions pipeline `0 7 * * *` plus `workflow_dispatch` (`job_url`, `board`, `dry_run`, `allow_submit=false`).
 - Artifact upload and fail-loud notifications.
 - Deploy the Next.js app (Vercel or Render/Fly) with keep-alive if the host sleeps.
-- After OAuth: Gmail monitor for LinkedIn alerts and replies/interviews/rejections feeding status; Sheet write-through on.
+- After OAuth: Gmail monitor for LinkedIn alerts and possible replies; reply matches are suggestions for human review and do not change status automatically. Sheet sync writes tracker updates.
 - API boards (Wellfound, YC, Ashby) as tokens arrive.
 - Daily digest.
 
@@ -172,14 +183,14 @@ JSON, stable, versioned if the schema changes. Protect `/status` and `/applicati
 
 **Cross-cutting:** micro1 is discover/notify only (two axes, verbatim vendor answers). No LinkedIn automation. Respect ToS and rate limits.
 
-## 8. Open decisions (don't block Phase 0/1)
+## 8. Remaining setup and decisions
 
-1. **Google OAuth code exchange:** finish it to unlock Gmail and Sheets. Until then they stay flag-gated.
+1. **Google OAuth consent:** code exchange tooling exists. Configure Google Cloud OAuth credentials, consent, and refresh token to enable Gmail and Sheets.
 2. **Config source:** **Resolved 2026-10-09 — committed copy + sync script.** `config/*.json` are committed copies of the OS repo's `career/*.json`; `npm run config:sync` (`scripts/sync-config.ts`, `--check` for drift detection) refreshes and validates them, so CI and fresh clones never need the OS checkout. `JOBPILOT_CONFIG_DIR` overrides the location, `JOBPILOT_OS_REPO` moves the source.
-3. **Base CV on Linux/CI:** commit a non-secret base CV (JSON/markdown) into JobPilot, or use an embedded fallback? The real base is a Windows-only PDF. I'd lean toward a committed JSON/markdown CV.
-4. **Hosting:** Next.js API on Vercel is the easiest, since Playwright never runs there. Render/Fly only if you want a persistent process. Postgres provider to confirm.
-5. **Digest channel:** Telegram, email, or both.
-6. **keep_alive:** drop it entirely if you host on Vercel (no sleeping).
+3. **Base CV:** fill the ignored `config/cv_base.json` with factual history. The example file is intentionally not used as a CV.
+4. **Hosting:** choose a Next.js host and PostgreSQL provider, then set the same `DATABASE_URL` and API token for the host and Actions.
+5. **Digest channel:** Telegram is implemented; email digest is not.
+6. **keep_alive:** optional and unrelated to the scheduled Actions worker.
 
 ## 9. Value scorecard
 
