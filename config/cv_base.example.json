@@ -1,0 +1,20 @@
+{
+  "summary": "Write a factual professional summary of at least 40 characters.",
+  "experience": [
+    {
+      "company": "Employer name",
+      "role": "Job title",
+      "dates": "2022–2025",
+      "location": "Remote",
+      "accomplishments": ["Describe a real accomplishment and its measurable result."]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project name",
+      "url": "https://example.com",
+      "description": "Describe what you built and the outcome.",
+      "technologies": ["TypeScript", "PostgreSQL"]
+    }
+  ]
+}
