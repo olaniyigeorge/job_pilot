@@ -11,58 +11,58 @@
       "name": "Wellfound (AngelList)",
       "url": "https://wellfound.com",
       "type": "api",
-      "enabled": true,
+      "enabled": false,
       "query_params": {
         "role": "Full-Stack Software Engineer",
         "skill": ["Python", "React", "TypeScript"],
         "location": "Remote",
         "type": "Full-time"
       },
-      "notes": "Has a public API; best coverage for startup jobs. Requires API token."
+      "notes": "Disabled until an authorized, supported integration is configured."
     },
     {
       "name": "RemoteOK",
       "url": "https://remoteok.com",
-      "type": "browser",
+      "type": "api",
       "enabled": true,
       "query_params": {
         "category": "programming"
       },
-      "notes": "No public RSS feed. Use browser automation to scrape remote job listings from remoteok.com/remote-jobs. Fragile but workable."
+      "notes": "Uses RemoteOK's public JSON feed; respect its published API terms and rate limits."
     },
     {
       "name": "RemoteOK (AI/ML)",
       "url": "https://remoteok.com",
-      "type": "browser",
+      "type": "api",
       "enabled": true,
       "query_params": {
         "category": "ai"
       },
-      "notes": "Same as RemoteOK above — browser-based. Filter for AI-tagged posts."
+      "notes": "Uses RemoteOK's public JSON feed filtered for AI-tagged posts."
     },
     {
       "name": "Ashby",
       "url": "https://ashbyhq.com",
       "type": "api",
-      "enabled": true,
+      "enabled": false,
       "query_params": {
         "role": "Software Engineer",
         "location": "Remote"
       },
-      "notes": "Ashby has a public jobs API for companies using their ATS. Requires per-company discovery or aggregate search."
+      "notes": "Enable per-company by setting query_params.provider=ashby and query_params.organization to the public board slug."
     },
     {
       "name": "LinkedIn",
       "url": "https://linkedin.com/jobs",
       "type": "email_monitor",
-      "enabled": true,
+      "enabled": false,
       "query_params": {
         "keywords": "Full-Stack Software Engineer Python React",
         "location": "Remote",
         "remote": true
       },
       "email_filter": "from:linkedin.com subject:(job OR hiring OR opportunity OR 'career opportunity')",
-      "notes": "Instead of scraping, monitor LinkedIn job alert emails. Requires Gmail access to search inbox for LinkedIn job alerts."
+      "notes": "Never scrape or log in. Enable only after Gmail read-only OAuth is configured."
     },
     {
       "name": "Indeed",
@@ -110,12 +110,34 @@
       "name": "Y Combinator Jobs",
       "url": "https://jobs.ycombinator.com",
       "type": "api",
-      "enabled": true,
+      "enabled": false,
       "query_params": {
         "role": "Software Engineer",
         "location": "Remote"
       },
-      "notes": "YC has a public jobs board with API access."
+      "notes": "Disabled until a supported public feed or company-board API is configured."
+    },
+    {
+      "name": "Mercor Explore",
+      "url": "https://work.mercor.com/explore",
+      "type": "browser",
+      "enabled": false,
+      "query_params": {
+        "access": "manual",
+        "mode": "project-based-and-one-time"
+      },
+      "notes": "Manual portal only. Sign in and review opportunities yourself; no supported public feed or authorized adapter is configured. Use --job-url with an individual public posting URL when its page exposes job details."
+    },
+    {
+      "name": "micro1 Talent Jobs",
+      "url": "https://www.talent.micro1.ai/jobs",
+      "type": "browser",
+      "enabled": false,
+      "query_params": {
+        "access": "manual",
+        "mode": "talent-opportunities"
+      },
+      "notes": "Manual portal only. Discover and notify; do not automate applications. Use --job-url with an individual public posting URL when its page exposes job details."
     }
   ],
   "google_sheet": {
